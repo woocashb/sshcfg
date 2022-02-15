@@ -22,20 +22,15 @@ Host {{ ssh_host }}
   User {{ ssh_user }}
   {%- if ssh_proxy_command %}
   ProxyCommand {{ ssh_proxy_command }}
-  {%- endif %}
+  {%- endif -%}
 """
 
 parser = argparse.ArgumentParser(description="Manage ssh config entries")
-MANDATORY_ARGS = ('host', 'hostname', 'user', 'proxy_command')
+MANDATORY_ARGS = ('host', 'hostname', 'user')
 for mandatory_arg in MANDATORY_ARGS:
     parser.add_argument(mandatory_arg)
-
+parser.add_argument('proxy_command', nargs='?', default=None)
 ssh_cfg_entry = parser.parse_args()
-
-ssh_cfg_entry.host = sys.argv[1]
-ssh_cfg_entry.hostname = sys.argv[2]
-ssh_cfg_entry.user = sys.argv[3]
-
 
 ssh_entry_instance = jinja2.Template(ssh_entry_template)
 with open(ssh_config_path, 'a') as ssh_config_fd:
