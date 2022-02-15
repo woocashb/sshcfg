@@ -5,9 +5,9 @@ import os
 import sys
 import re
 
-
 def usage():
-    print("Add new entry to ssh config at default location for current user\nUsage: {} Host Hostname User [ProxyCommand]".format(sys.argv[0]))
+    print("Add new entry to ssh config at default location for current user\
+     \nUsage: {} Host Hostname User [ProxyCommand]".format(sys.argv[0]))
 
 
 if not len(sys.argv) >= 4:
@@ -15,7 +15,7 @@ if not len(sys.argv) >= 4:
     usage()
     sys.exit(1)
 
-ssh_config_path = os.path.expanduser("~/.ssh/config.dev")
+ssh_config_path = os.path.expanduser(".ssh/config.dev")
 
 ssh_entry_options = "(hostname|proxycommand|user|port)"
 
