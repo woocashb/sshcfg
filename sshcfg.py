@@ -27,17 +27,29 @@ class SSHConfigFile(object):
             f_handle.write("{}\n".format(str(new_entry)))
 
     def list(self):
-        for entry in self.entries:
-            print(entry)
+        print(self.contents)
+        # for entry in self.entries:
+        #     print(entry)
 
     def search(self, sought_entry):
         for entry in self.entries:
             if sought_entry == entry.host:
                 print(entry)
-        else:
-            print("No such entry found.")
+                return True
+        print("No such entry found!")
+        return False
 
     def remove(self, ssh_config_entry):
+        for entry in self.entries:
+            if entry.host == ssh_config_entry:
+                self.entries.remove(entry)
+
+        print(self.entries)
+        with open(self.path, "w") as f_handle:
+            for entry in self.entries:
+                f_handle.write("{}\n".format(str(entry)))
+
+    def update(self, sought_entry):
         pass
 
 
@@ -78,6 +90,8 @@ parser.add_argument('-a', '--add', nargs=len(MANDATORY_ARGS),
 parser.add_argument('proxy_command', nargs="?", default=None)
 parser.add_argument('-l', '--list', action="store_true", help='list all ssh config entries within config file')
 parser.add_argument('-s', '--search', dest="sought_entry", help='search for particular entry within config file')
+parser.add_argument('-r', '--remove', help='remove entry from config file')
+
 args = parser.parse_args()
 
 if len(sys.argv) == 1:
@@ -92,3 +106,6 @@ if args.sought_entry:
 
 if args.add:
     ssh_config_file.add(*args.add)
+
+if args.remove:
+    ssh_config_file.remove(args.remove)
