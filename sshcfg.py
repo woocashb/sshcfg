@@ -43,14 +43,18 @@ class SSHConfigFile(object):
         for entry in self.entries:
             if entry.host == ssh_config_entry:
                 self.entries.remove(entry)
-
-        print(self.entries)
         with open(self.path, "w") as f_handle:
             for entry in self.entries:
                 f_handle.write("{}\n".format(str(entry)))
 
-    def update(self, sought_entry):
-        pass
+    def update(self, entry_host, new_host, new_hostname, new_user, new_proxy_command=None):
+        for entry in self.entries:
+            if entry.host == entry_host:
+                self.remove(entry_host)
+                self.add(new_host, new_hostname, new_user, new_proxy_command)
+                return True
+        print('No such entry found!')
+        return False
 
 
 class SSHConfigEntry(object):
@@ -91,6 +95,7 @@ parser.add_argument('proxy_command', nargs="?", default=None)
 parser.add_argument('-l', '--list', action="store_true", help='list all ssh config entries within config file')
 parser.add_argument('-s', '--search', dest="sought_entry", help='search for particular entry within config file')
 parser.add_argument('-r', '--remove', help='remove entry from config file')
+parser.add_argument('-u', '--update', nargs=len(MANDATORY_ARGS) + 1, help='update entry by given Host value')
 
 args = parser.parse_args()
 
@@ -109,3 +114,6 @@ if args.add:
 
 if args.remove:
     ssh_config_file.remove(args.remove)
+
+if args.update:
+    ssh_config_file.update(*args.update)
