@@ -30,8 +30,12 @@ class SSHConfigFile(object):
 
     def list(self, brief=False):
         if brief:
-            for entry in self.entries:
-                print("{} {}".format(entry.host, entry.hostname))
+            for index, entry in enumerate(self.entries, start=1):
+                if index % 2 == 0:
+                  print("{2}{0} {1}{3}".format(entry.host, entry.hostname, colorama.Fore.BLUE, colorama.Style.RESET_ALL))
+                else:
+                  print("{} {}".format(entry.host, entry.hostname))
+
         else:
             print(self.contents)
             return None
