@@ -4,7 +4,9 @@ import sys
 import re
 import argparse
 import pathlib
+import colorama
 import jinja2
+
 
 class SSHConfigFile(object):
     def __init__(self, ssh_config_path):
@@ -26,8 +28,14 @@ class SSHConfigFile(object):
         with open(self.path, "a") as f_handle:
             f_handle.write("{}\n".format(str(new_entry)))
 
-    def list(self):
-        print(self.contents)
+    def list(self, brief=False):
+        if brief:
+            for entry in self.entries:
+                print("{} {}".format(entry.host, entry.hostname))
+        else:
+            print(self.contents)
+            return None
+
         # for entry in self.entries:
         #     print(entry)
 
@@ -96,6 +104,7 @@ parser.add_argument('-l', '--list', action="store_true", help='list all ssh conf
 parser.add_argument('-s', '--search', dest="sought_entry", help='search for particular entry within config file')
 parser.add_argument('-r', '--remove', help='remove entry from config file')
 parser.add_argument('-u', '--update', nargs=len(MANDATORY_ARGS) + 1, help='update entry by given Host value')
+parser.add_argument('-b', '--brief', action="store_true", help="list ssh config entries in brief format")
 
 args = parser.parse_args()
 
@@ -103,8 +112,11 @@ if len(sys.argv) == 1:
     parser.print_help()
     sys.exit()
 
-if args.list:
+if args.list and not args.brief:
     ssh_config_file.list()
+
+if args.list and args.brief:
+    ssh_config_file.list(args.brief)
 
 if args.sought_entry:
     ssh_config_file.search(args.sought_entry)
