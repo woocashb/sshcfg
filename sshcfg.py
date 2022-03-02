@@ -32,9 +32,10 @@ class SSHConfigFile(object):
         if brief:
             for index, entry in enumerate(self.entries, start=1):
                 if index % 2 == 0:
-                  print("{2}{0} {1}{3}".format(entry.host, entry.hostname, colorama.Fore.BLUE, colorama.Style.RESET_ALL))
+                  # print("{2}{0} {1}{3}".format(entry.host, entry.hostname, entry.user, entry.proxy_command, colorama.Fore.BLUE, colorama.Style.RESET_ALL))
+                   print(f"{colorama.Fore.BLUE}{entry.host} {entry.hostname} {entry.user} {entry.proxy_command or ''} {colorama.Style.RESET_ALL}")
                 else:
-                  print("{} {}".format(entry.host, entry.hostname))
+                  print(f"{colorama.Fore.GREEN}{entry.host} {entry.hostname} {entry.user} {entry.proxy_command or ''} {colorama.Style.RESET_ALL}")
 
         else:
             print(self.contents)
