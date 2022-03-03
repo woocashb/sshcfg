@@ -38,9 +38,11 @@ class SSHConfigFile(object):
                   print(f"{colorama.Fore.GREEN}{entry.host} {entry.hostname} {entry.user} {entry.proxy_command or ''} {colorama.Style.RESET_ALL}")
 
         else:
-            print(self.contents)
-            return None
-
+            for index, entry in enumerate(self.entries, start=1):
+                if index % 2 == 0:
+                    print(f"{colorama.Fore.BLUE} {entry} {colorama.Style.RESET_ALL}")
+                else:
+                      print(f"{colorama.Fore.GREEN} {entry} {colorama.Style.RESET_ALL}")
         # for entry in self.entries:
         #     print(entry)
 
