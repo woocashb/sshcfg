@@ -28,21 +28,20 @@ class SSHConfigFile(object):
         with open(self.path, "a") as f_handle:
             f_handle.write("{}\n".format(str(new_entry)))
 
-    def list(self, brief=False):
-        if brief:
+    def list(self, verbose=False):
+        if verbose:
+            for index, entry in enumerate(self.entries, start=1):
+                if index % 2 == 0:
+                    print(f"{colorama.Fore.BLUE} {entry} {colorama.Style.RESET_ALL}")
+                else:
+                      print(f"{colorama.Fore.GREEN} {entry} {colorama.Style.RESET_ALL}")
+        else:
             for index, entry in enumerate(self.entries, start=1):
                 if index % 2 == 0:
                   # print("{2}{0} {1}{3}".format(entry.host, entry.hostname, entry.user, entry.proxy_command, colorama.Fore.BLUE, colorama.Style.RESET_ALL))
                    print(f"{colorama.Fore.BLUE}{entry.host} {entry.hostname} {entry.user} {entry.proxy_command or ''} {colorama.Style.RESET_ALL}")
                 else:
                   print(f"{colorama.Fore.GREEN}{entry.host} {entry.hostname} {entry.user} {entry.proxy_command or ''} {colorama.Style.RESET_ALL}")
-
-        else:
-            for index, entry in enumerate(self.entries, start=1):
-                if index % 2 == 0:
-                    print(f"{colorama.Fore.BLUE} {entry} {colorama.Style.RESET_ALL}")
-                else:
-                      print(f"{colorama.Fore.GREEN} {entry} {colorama.Style.RESET_ALL}")
         # for entry in self.entries:
         #     print(entry)
 
@@ -111,7 +110,7 @@ parser.add_argument('-l', '--list', action="store_true", help='list all ssh conf
 parser.add_argument('-s', '--search', dest="sought_entry", help='search for particular entry within config file')
 parser.add_argument('-r', '--remove', help='remove entry from config file')
 parser.add_argument('-u', '--update', nargs=len(MANDATORY_ARGS) + 1, help='update entry by given Host value')
-parser.add_argument('-b', '--brief', action="store_true", help="list ssh config entries in brief format")
+parser.add_argument('-v', '--verbose', action="store_true", help="list ssh config entries in brief format")
 
 args = parser.parse_args()
 
@@ -119,11 +118,11 @@ if len(sys.argv) == 1:
     parser.print_help()
     sys.exit()
 
-if args.list and not args.brief:
+if args.list and not args.verbose:
     ssh_config_file.list()
 
-if args.list and args.brief:
-    ssh_config_file.list(args.brief)
+if args.list and args.verbose:
+    ssh_config_file.list(args.verbose)
 
 if args.sought_entry:
     ssh_config_file.search(args.sought_entry)
