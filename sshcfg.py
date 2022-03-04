@@ -50,12 +50,12 @@ class SSHConfigFile(object):
         if re.search(r'^[0-9]{1,3}(\.[0-9]{1,3}){3}$', sought_entry):
             for entry in self.entries:
                 if sought_entry == entry.hostname:
-                    print(entry)
+                    print(f"{colorama.Fore.GREEN} {entry} {colorama.Style.RESET_ALL}")
                     return True
         else:
             for entry in self.entries:
                 if sought_entry == entry.host:
-                    print(entry)
+                    print(f"{colorama.Fore.GREEN} {entry} {colorama.Style.RESET_ALL}")
                     return True
         print("No such entry found!")
         return False
