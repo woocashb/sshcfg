@@ -6,7 +6,7 @@ import argparse
 import pathlib
 import colorama
 import jinja2
-
+import re
 
 class SSHConfigFile(object):
     def __init__(self, ssh_config_path):
@@ -46,10 +46,17 @@ class SSHConfigFile(object):
         #     print(entry)
 
     def search(self, sought_entry):
-        for entry in self.entries:
-            if sought_entry == entry.host:
-                print(entry)
-                return True
+        # Check if argument is an IP address and if so try to match against entry hostname instead
+        if re.search(r'^[0-9]{1,3}(\.[0-9]{1,3}){3}$', sought_entry):
+            for entry in self.entries:
+                if sought_entry == entry.hostname:
+                    print(entry)
+                    return True
+        else:
+            for entry in self.entries:
+                if sought_entry == entry.host:
+                    print(entry)
+                    return True
         print("No such entry found!")
         return False
 
