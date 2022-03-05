@@ -103,7 +103,7 @@ Host {{ ssh_host }}
     def is_valid_entry(self):
         pass
 
-ssh_config_file = SSHConfigFile("./.ssh/config.dev")
+
 
 parser = argparse.ArgumentParser(description="Manage ssh config entries")
 MANDATORY_ARGS = ('host', 'hostname', 'user')
@@ -118,12 +118,18 @@ parser.add_argument('-s', '--search', dest="sought_entry", help='search for part
 parser.add_argument('-r', '--remove', help='remove entry from config file')
 parser.add_argument('-u', '--update', nargs=len(MANDATORY_ARGS) + 1, help='update entry by given Host value')
 parser.add_argument('-v', '--verbose', action="store_true", help="list ssh config entries in brief format")
+parser.add_argument('-f', '--config-file', nargs=1, help="Specify path to ssh config file")
 
 args = parser.parse_args()
 
 if len(sys.argv) == 1:
     parser.print_help()
     sys.exit()
+
+if args.config_file:
+    ssh_config_file = SSHConfigFile(*args.config_file)
+else:
+    ssh_config_file = SSHConfigFile(pathlib.Path.home() / ".ssh/config")
 
 if args.list and not args.verbose:
     ssh_config_file.list()
