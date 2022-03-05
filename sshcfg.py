@@ -38,12 +38,9 @@ class SSHConfigFile(object):
         else:
             for index, entry in enumerate(self.entries, start=1):
                 if index % 2 == 0:
-                  # print("{2}{0} {1}{3}".format(entry.host, entry.hostname, entry.user, entry.proxy_command, colorama.Fore.BLUE, colorama.Style.RESET_ALL))
                    print(f"{colorama.Fore.BLUE}{entry.host} {entry.hostname} {entry.user} {entry.proxy_command or ''} {colorama.Style.RESET_ALL}")
                 else:
                   print(f"{colorama.Fore.GREEN}{entry.host} {entry.hostname} {entry.user} {entry.proxy_command or ''} {colorama.Style.RESET_ALL}")
-        # for entry in self.entries:
-        #     print(entry)
 
     def search(self, sought_entry):
         # Check if argument is an IP address and if so try to match against entry hostname instead
