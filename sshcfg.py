@@ -7,6 +7,10 @@ import pathlib
 import colorama
 import jinja2
 import re
+import getpass
+import pathlib
+import fabric
+import paramiko
 
 class SSHConfigFile(object):
     def __init__(self, ssh_config_path):
@@ -17,16 +21,35 @@ class SSHConfigFile(object):
     def _get_entries(self):
         self.entries = []
         for entry_match in re.finditer(SSHConfigEntry.entry_regex, self.contents):
-                host = entry_match.group(1)
-                hostname = entry_match.group(2)
-                user = entry_match.group(3)
-                proxy_command = entry_match.group(4) if len(entry_match.groups()) == 4 else None
-                self.entries.append(SSHConfigEntry(host, hostname, user, proxy_command))
+                self.host = entry_match.group(1)
+                self.hostname = entry_match.group(2)
+                self.user = entry_match.group(3)
+                self.proxy_command = entry_match.group(4) if len(entry_match.groups()) == 4 else None
+                self.entries.append(SSHConfigEntry(self.host, self.hostname, self.user, self.proxy_command))
 
     def add(self, host, hostname, user, proxy_command=None):
         new_entry = SSHConfigEntry(host, hostname, user, proxy_command)
+        for entry in self.entries:
+            if new_entry.host == entry.host:
+                print(f'Host "{new_entry.host}" already exists!')
+                sys.exit(1)
         with open(self.path, "a") as f_handle:
             f_handle.write("{}\n".format(str(new_entry)))
+        try:
+            ssh_client = fabric.Connection(host=hostname, user=user).run('ls', hide=True)
+        except paramiko.ssh_exception.AuthenticationException:
+            self.add_authorized_key(hostname, user)
+
+
+    def add_authorized_key(self, hostname, user):
+        password =  getpass.getpass(f"Enter password for {self.user}@{self.hostname}:")
+        ssh_client = fabric.Connection(host=hostname, user=user ,connect_kwargs={"password": password})
+        public_key = open(pathlib.Path.home() / '.ssh/id_rsa.pub').read()
+        run_add_public_key = ssh_client.run(f'echo "{public_key}" >> $HOME/.ssh/authorized_keys', hide=True)
+        if run_add_public_key.return_code == 0:
+            print(f"Added ssh public key to {self.hostname} authorized_keys")
+        else:
+            print(f"An error occured trying to add ssh public key to {self.hostname} authorized_keys - return_core: {run_add_public_key.return_code}")
 
     def list(self, verbose=False):
         if verbose:
